@@ -1,0 +1,1 @@
+﻿ Scaffold-DbContext 'Server=DESKTOP-JV4K3QV; Database=journeyplannerdb; Encrypt=False;TrustServerCertificate=False; user id=sa; pwd=Pa$$w0rd' Microsoft.EntityFrameworkCore.SqlServer -OutputDir Models -f

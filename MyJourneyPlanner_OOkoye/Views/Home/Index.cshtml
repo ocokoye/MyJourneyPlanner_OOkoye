@@ -1,0 +1,75 @@
+﻿@{
+    ViewData["Title"] = "Simple Journey Planner";
+
+}
+@section scripts{
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
+
+   
+    @*<script src="~/js/site.js" type="text/javascript"></script>*@
+    <script>
+        
+            function CheckForBlank() {
+                alert("Hello Planner");
+            }
+        function setAction() {
+            const url = 'https://localhost:7216/api/show?';
+            const andSign = '&';
+            const startstation = "startstation=" + document.getElementById("startstation").value;
+            const destinationstation = "destinationstation=" + document.getElementById("destinationstation").value;
+            const viastation = "viastation=" + document.getElementById("viastation").value;
+            const excludingstation = "excludingstation=" + document.getElementById("excludingstation").value;
+
+            const newUrl = url + startstation + andSign + destinationstation + andSign + viastation + andSign + excludingstation
+
+            var stations = JSON.stringify({startstation: document.getElementById("startstation").value,
+                              destinationstation: document.getElementById("destinationstation").value});
+
+            localStorage.setItem('stations', stations);
+            
+            fetch(
+                newUrl,
+                {
+                    headers: { "Content-Type": "application/json" },
+                    method: "GET",
+                    
+                }
+            )
+                .then((response) => response.json())
+                .then((data) => {
+                    if (data[0].status == "NotExists"){
+                        alert(data[0].message);
+                    }
+                    else{
+                        localStorage.setItem("result", data[0].data);
+                        window.location.href = "https://localhost:7216/Home/Result";
+                    }
+                });
+                
+            return false;
+        }
+    </script>
+}
+<div class="text-center">
+    <h4 class="display-4">Simple Journey Planner</h4>
+   @* <form id="form" onsubmit="CheckForBlank">*@
+        <p>
+        <input id="startstation" name="startstation" type="search" placeholder="Start Station" required>
+            </p>
+        <p>
+        <input id="destinationstation" name="destinationstation" type="text" placeholder="Destination Station" required>
+        </p>
+        <p>
+        <input id="viastation" name="viastation" type="search" placeholder="Via Station">
+        </p>
+        <p>
+        <input id="excludingstation" name="excludingstation" type="text" placeholder="Excluding Station">
+        </p>
+@*        <p>
+            <textarea name="Message" cols="30" rows="10" placeholder="" ></textarea>
+        </p>*@
+
+    <button type="submit" onclick="setAction()">Submit </button>
+    @*</form>*@
+    @*<p> Obiora Okoye</p>*@
+</div>
