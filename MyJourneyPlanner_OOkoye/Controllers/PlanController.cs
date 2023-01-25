@@ -78,16 +78,30 @@ namespace MyJourneyPlanner_OOkoye.Controllers
 
                       
                         var FirstRoute = p.printAllPaths(s, d)[0];
-                        foreach (var path in FirstRoute)
+                        for (int i=0; i < FirstRoute.Count; i++)
                         {
                             var item = new RouteDTO();
-                            item.StationId = int.Parse(path.ToString());
-                            item.StationName = station.Where(item => item.StationId == int.Parse(path.ToString())).FirstOrDefault().StationName;
-                            item.LineId = station.Where(item => item.StationId == int.Parse(path.ToString())).FirstOrDefault().LineId;
-                            item.LineName = station.Where(item => item.StationId == int.Parse(path.ToString())).FirstOrDefault().LineName;
-                            item.LineColor = station.Where(item => item.StationId == int.Parse(path.ToString())).FirstOrDefault().LineColor;
+                            item.StationId = int.Parse(FirstRoute[i].ToString());
+                            item.StationName = station.Where(item => item.StationId == int.Parse(FirstRoute[i].ToString())).FirstOrDefault().StationName;
+                            item.LineId = station.Where(item => item.StationId == int.Parse(FirstRoute[i].ToString())).FirstOrDefault().LineId;
+                            item.LineName = station.Where(item => item.StationId == int.Parse(FirstRoute[i].ToString())).FirstOrDefault().LineName;
+                            item.LineColor = station.Where(item => item.StationId == int.Parse(FirstRoute[i].ToString())).FirstOrDefault().LineColor;
+
                             connectingroutes.Add(item);
-                        }
+                                if(i< FirstRoute.Count -1 && station.Where(item => item.StationId == int.Parse(FirstRoute[i].ToString())).FirstOrDefault().LineId != station.Where(item => item.StationId == int.Parse(FirstRoute[i +1].ToString())).FirstOrDefault().LineId)
+                                {
+                                    var item0 = new RouteDTO();
+                                    var CurLine = station.Where(item => item.StationId == int.Parse(FirstRoute[i].ToString())).FirstOrDefault().LineName;
+                                    var NewLine = station.Where(item => item.StationId == int.Parse(FirstRoute[i+ 1].ToString())).FirstOrDefault().LineName;
+                                    var NewStation = station.Where(item => item.StationId == int.Parse(FirstRoute[i+1].ToString())).FirstOrDefault().StationName;
+                                    var continuelineMsg = String.Format("change line from {0} to {1} and continue journey toward {2}",CurLine,NewLine,NewStation );
+                                    item0.StationId = 0;
+                                    item0.StationName = continuelineMsg;
+                                    item0.LineId = 0;
+                                    item0.LineName = "";
+                                    connectingroutes.Add(item0);
+                                }
+                            }
                       
 
                             //   var connectingroutes = station.Where(a => FirstRoute.Any(b => a.StationId  == int.Parse(b.ToString())));
@@ -119,19 +133,33 @@ namespace MyJourneyPlanner_OOkoye.Controllers
                                     return result;
                                 }
 
-                                foreach (var path in ViaRoute)
+                                
+                                for (int i = 0; i < ViaRoute.Count; i++)
                                 {
                                     var item = new RouteDTO();
-                                    item.StationId = int.Parse(path.ToString());
-                                    item.StationName = station.Where(item => item.StationId == int.Parse(path.ToString())).FirstOrDefault().StationName;
-                                    item.LineId = station.Where(item => item.StationId == int.Parse(path.ToString())).FirstOrDefault().LineId;
-                                    item.LineName = station.Where(item => item.StationId == int.Parse(path.ToString())).FirstOrDefault().LineName;
-                                    item.LineColor = station.Where(item => item.StationId == int.Parse(path.ToString())).FirstOrDefault().LineColor;
+                                    item.StationId = int.Parse(ViaRoute[i].ToString());
+                                    item.StationName = station.Where(item => item.StationId == int.Parse(ViaRoute[i].ToString())).FirstOrDefault().StationName;
+                                    item.LineId = station.Where(item => item.StationId == int.Parse(ViaRoute[i].ToString())).FirstOrDefault().LineId;
+                                    item.LineName = station.Where(item => item.StationId == int.Parse(ViaRoute[i].ToString())).FirstOrDefault().LineName;
+                                    item.LineColor = station.Where(item => item.StationId == int.Parse(ViaRoute[i].ToString())).FirstOrDefault().LineColor;
+
                                     connectingroutes.Add(item);
+                                    if (i < ViaRoute.Count - 1 && station.Where(item => item.StationId == int.Parse(ViaRoute[i].ToString())).FirstOrDefault().LineId != station.Where(item => item.StationId == int.Parse(ViaRoute[i + 1].ToString())).FirstOrDefault().LineId)
+                                    {
+                                        var item0 = new RouteDTO();
+                                        var CurLine = station.Where(item => item.StationId == int.Parse(ViaRoute[i].ToString())).FirstOrDefault().LineName;
+                                        var NewLine = station.Where(item => item.StationId == int.Parse(ViaRoute[i + 1].ToString())).FirstOrDefault().LineName;
+                                        var NewStation = station.Where(item => item.StationId == int.Parse(ViaRoute[i + 1].ToString())).FirstOrDefault().StationName;
+                                        var continuelineMsg = String.Format("change line from {0} to {1} and continue journey toward {2}", CurLine, NewLine, NewStation);
+                                        item0.StationId = 0;
+                                        item0.StationName = continuelineMsg;
+                                        item0.LineId = 0;
+                                        item0.LineName = "";
+                                        connectingroutes.Add(item0);
+                                    }
                                 }
 
-
-                                //   var connectingroutes = station.Where(a => FirstRoute.Any(b => a.StationId  == int.Parse(b.ToString())));
+                               
 
                                 result.Add(new ResponseMessage() { Status = "OK", Message = "Retrieved Successfully", Data = JsonConvert.SerializeObject(connectingroutes) });
 
@@ -180,21 +208,31 @@ namespace MyJourneyPlanner_OOkoye.Controllers
                                 result.Add(new ResponseMessage() { Status = "NotExists", Message = "No Available Routes Outside the Excluding Station" });
                                 return result;
                             }
-                            
-                            foreach (var path in ExclRoute)
+
+                            for (int i = 0; i < ExclRoute.Count; i++)
                             {
                                 var item = new RouteDTO();
-                                item.StationId = int.Parse(path.ToString());
-                                item.StationName = station.Where(item => item.StationId == int.Parse(path.ToString())).FirstOrDefault().StationName;
-                                item.LineId = station.Where(item => item.StationId == int.Parse(path.ToString())).FirstOrDefault().LineId;
-                                item.LineName = station.Where(item => item.StationId == int.Parse(path.ToString())).FirstOrDefault().LineName;
-                                item.LineColor = station.Where(item => item.StationId == int.Parse(path.ToString())).FirstOrDefault().LineColor;
+                                item.StationId = int.Parse(ExclRoute[i].ToString());
+                                item.StationName = station.Where(item => item.StationId == int.Parse(ExclRoute[i].ToString())).FirstOrDefault().StationName;
+                                item.LineId = station.Where(item => item.StationId == int.Parse(ExclRoute[i].ToString())).FirstOrDefault().LineId;
+                                item.LineName = station.Where(item => item.StationId == int.Parse(ExclRoute[i].ToString())).FirstOrDefault().LineName;
+                                item.LineColor = station.Where(item => item.StationId == int.Parse(ExclRoute[i].ToString())).FirstOrDefault().LineColor;
+
                                 connectingroutes.Add(item);
+                                if (i < ExclRoute.Count - 1 && station.Where(item => item.StationId == int.Parse(ExclRoute[i].ToString())).FirstOrDefault().LineId != station.Where(item => item.StationId == int.Parse(ExclRoute[i + 1].ToString())).FirstOrDefault().LineId)
+                                {
+                                    var item0 = new RouteDTO();
+                                    var CurLine = station.Where(item => item.StationId == int.Parse(ExclRoute[i].ToString())).FirstOrDefault().LineName;
+                                    var NewLine = station.Where(item => item.StationId == int.Parse(ExclRoute[i + 1].ToString())).FirstOrDefault().LineName;
+                                    var NewStation = station.Where(item => item.StationId == int.Parse(ExclRoute[i + 1].ToString())).FirstOrDefault().StationName;
+                                    var continuelineMsg = String.Format("change line from {0} to {1} and continue journey toward {2}", CurLine, NewLine, NewStation);
+                                    item0.StationId = 0;
+                                    item0.StationName = continuelineMsg;
+                                    item0.LineId = 0;
+                                    item0.LineName = "";
+                                    connectingroutes.Add(item0);
+                                }
                             }
-
-
-                            //   var connectingroutes = station.Where(a => FirstRoute.Any(b => a.StationId  == int.Parse(b.ToString())));
-
                             result.Add(new ResponseMessage() { Status = "OK", Message = "Retrieved Successfully", Data = JsonConvert.SerializeObject(connectingroutes) });
 
 
