@@ -14,6 +14,7 @@
             }
         function setAction() {
             const url = 'https://localhost:7216/api/show?';
+            //  const url = 'https://simplejourneyplanner.azurewebsites.net/api/show?';
             const andSign = '&';
             const startstation = "startstation=" + document.getElementById("startstation").value;
             const destinationstation = "destinationstation=" + document.getElementById("destinationstation").value;
@@ -43,6 +44,7 @@
                     else{
                         localStorage.setItem("result", data[0].data);
                         window.location.href = "https://localhost:7216/Home/Result";
+                        //window.location.href = "https://simplejourneyplanner.azurewebsites.net/Home/Result";
                     }
                 });
                 

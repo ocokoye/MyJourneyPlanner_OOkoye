@@ -32,124 +32,69 @@ namespace MyJourneyPlanner_OOkoye.Controllers
             List<ResponseMessage> result = new List<ResponseMessage>();
             var Startstation = db.Stations.Where(s => s.StationName == startstation).FirstOrDefault();
             var Destinationstation = db.Stations.Where(s => s.StationName == destinationstation).FirstOrDefault();
-
-            if (Startstation != null)
+            if (startstation != null && destinationstation != null)
             {
-                if (Destinationstation != null)
+                if (Startstation != null)
                 {
-                    var station = (from stations in db.Stations
-                                   select new RouteDTO
-                                   {
-
-                                       StationId = stations.StationId,
-                                       StationName = stations.StationName,
-                                       LineId = db.LineStations.Where(p => p.StationId == stations.StationId).FirstOrDefault().LineId,
-                                       LineName = db.Lines.Where(p => p.LineId == (db.LineStations.Where(p => p.StationId == stations.StationId).FirstOrDefault().LineId)).FirstOrDefault().LineName,
-                                       LineColor = db.Lines.Where(p => p.LineId == (db.LineStations.Where(p => p.StationId == stations.StationId).FirstOrDefault().LineId)).FirstOrDefault().LineColor != null ? db.Lines.Where(p => p.LineId == (db.LineStations.Where(p => p.StationId == stations.StationId).FirstOrDefault().LineId)).FirstOrDefault().LineName : "",
-
-                                   }
-                       ).ToList();
-
-                    Path p = new Path(db.Stations.Count() + 1);
-                    var lStation = db.StationPairs.ToList();
-
-
-                    for (int i = 0; i < lStation.Count(); i++)
+                    if (Destinationstation != null)
                     {
-                        p.addEdge(lStation[i].StartStationId, lStation[i].DestinatioinStationId);
-                    }
+                        var station = (from stations in db.Stations
+                                       select new RouteDTO
+                                       {
+
+                                           StationId = stations.StationId,
+                                           StationName = stations.StationName,
+                                           LineId = db.LineStations.Where(p => p.StationId == stations.StationId).FirstOrDefault().LineId,
+                                           LineName = db.Lines.Where(p => p.LineId == (db.LineStations.Where(p => p.StationId == stations.StationId).FirstOrDefault().LineId)).FirstOrDefault().LineName,
+                                           LineColor = db.Lines.Where(p => p.LineId == (db.LineStations.Where(p => p.StationId == stations.StationId).FirstOrDefault().LineId)).FirstOrDefault().LineColor != null ? db.Lines.Where(p => p.LineId == (db.LineStations.Where(p => p.StationId == stations.StationId).FirstOrDefault().LineId)).FirstOrDefault().LineName : "",
+
+                                       }
+                           ).ToList();
+
+                        Path p = new Path(db.Stations.Count() + 1);
+                        var lStation = db.StationPairs.ToList();
 
 
-
-
-
-
-                    int s = Startstation.StationId;
-
-
-                    //  destination station
-                    int d = Destinationstation.StationId;
-
-                    List<RouteDTO> connectingroutes = new List<RouteDTO>();
-                    if ( excludingstation == null)
-                    {
-                       if ( viastation == null )
+                        for (int i = 0; i < lStation.Count(); i++)
                         {
+                            p.addEdge(lStation[i].StartStationId, lStation[i].DestinatioinStationId);
+                        }
 
-                      
-                        var FirstRoute = p.printAllPaths(s, d)[0];
-                        for (int i=0; i < FirstRoute.Count; i++)
+
+
+
+
+
+                        int s = Startstation.StationId;
+
+
+                        //  destination station
+                        int d = Destinationstation.StationId;
+
+                        List<RouteDTO> connectingroutes = new List<RouteDTO>();
+                        if (excludingstation == null)
                         {
-                            var item = new RouteDTO();
-                            item.StationId = int.Parse(FirstRoute[i].ToString());
-                            item.StationName = station.Where(item => item.StationId == int.Parse(FirstRoute[i].ToString())).FirstOrDefault().StationName;
-                            item.LineId = station.Where(item => item.StationId == int.Parse(FirstRoute[i].ToString())).FirstOrDefault().LineId;
-                            item.LineName = station.Where(item => item.StationId == int.Parse(FirstRoute[i].ToString())).FirstOrDefault().LineName;
-                            item.LineColor = station.Where(item => item.StationId == int.Parse(FirstRoute[i].ToString())).FirstOrDefault().LineColor;
-
-                            connectingroutes.Add(item);
-                                if(i< FirstRoute.Count -1 && station.Where(item => item.StationId == int.Parse(FirstRoute[i].ToString())).FirstOrDefault().LineId != station.Where(item => item.StationId == int.Parse(FirstRoute[i +1].ToString())).FirstOrDefault().LineId)
-                                {
-                                    var item0 = new RouteDTO();
-                                    var CurLine = station.Where(item => item.StationId == int.Parse(FirstRoute[i].ToString())).FirstOrDefault().LineName;
-                                    var NewLine = station.Where(item => item.StationId == int.Parse(FirstRoute[i+ 1].ToString())).FirstOrDefault().LineName;
-                                    var NewStation = station.Where(item => item.StationId == int.Parse(FirstRoute[i+1].ToString())).FirstOrDefault().StationName;
-                                    var continuelineMsg = String.Format("change line from {0} to {1} and continue journey toward {2}",CurLine,NewLine,NewStation );
-                                    item0.StationId = 0;
-                                    item0.StationName = continuelineMsg;
-                                    item0.LineId = 0;
-                                    item0.LineName = "";
-                                    connectingroutes.Add(item0);
-                                }
-                            }
-                      
-
-                            //   var connectingroutes = station.Where(a => FirstRoute.Any(b => a.StationId  == int.Parse(b.ToString())));
-
-                            result.Add(new ResponseMessage() { Status = "OK", Message = "Retrieved Successfully", Data = JsonConvert.SerializeObject(connectingroutes) });
-                        
-                       }
-                       else
-                        {
-                            var Viastation = db.Stations.Where(s => s.StationName == viastation).FirstOrDefault();
-                            if (Viastation != null)
+                            if (viastation == null)
                             {
-                                int v = Viastation.StationId;
-                                
-                                List<int> ViaRoute = new List<int>();
-                                var AllRoute = p.printAllPaths(s, d);
-                                 bool bfound = false;
-                                for (int i = 0; i < AllRoute.Count ; i++)
-                                {
-                                    if (AllRoute[i].Contains(v))
-                                        {
-                                        ViaRoute = AllRoute[i];
-                                        bfound = true;
-                                    }
-                                }
-                               if( !bfound)
-                                {
-                                    result.Add(new ResponseMessage() { Status = "NotExists", Message = "Via Station does not exist in Route" });
-                                    return result;
-                                }
 
-                                
-                                for (int i = 0; i < ViaRoute.Count; i++)
+
+                                var FirstRoute = p.printAllPaths(s, d)[0];
+                                for (int i = 0; i < FirstRoute.Count; i++)
                                 {
                                     var item = new RouteDTO();
-                                    item.StationId = int.Parse(ViaRoute[i].ToString());
-                                    item.StationName = station.Where(item => item.StationId == int.Parse(ViaRoute[i].ToString())).FirstOrDefault().StationName;
-                                    item.LineId = station.Where(item => item.StationId == int.Parse(ViaRoute[i].ToString())).FirstOrDefault().LineId;
-                                    item.LineName = station.Where(item => item.StationId == int.Parse(ViaRoute[i].ToString())).FirstOrDefault().LineName;
-                                    item.LineColor = station.Where(item => item.StationId == int.Parse(ViaRoute[i].ToString())).FirstOrDefault().LineColor;
+                                    item.StationId = int.Parse(FirstRoute[i].ToString());
+                                    item.StationName = station.Where(item => item.StationId == int.Parse(FirstRoute[i].ToString())).FirstOrDefault().StationName;
+                                    item.LineId = station.Where(item => item.StationId == int.Parse(FirstRoute[i].ToString())).FirstOrDefault().LineId;
+                                    item.LineName = station.Where(item => item.StationId == int.Parse(FirstRoute[i].ToString())).FirstOrDefault().LineName;
+                                    item.LineColor = station.Where(item => item.StationId == int.Parse(FirstRoute[i].ToString())).FirstOrDefault().LineColor;
 
                                     connectingroutes.Add(item);
-                                    if (i < ViaRoute.Count - 1 && station.Where(item => item.StationId == int.Parse(ViaRoute[i].ToString())).FirstOrDefault().LineId != station.Where(item => item.StationId == int.Parse(ViaRoute[i + 1].ToString())).FirstOrDefault().LineId)
+                                    if (i < FirstRoute.Count - 1 && station.Where(item => item.StationId == int.Parse(FirstRoute[i].ToString())).FirstOrDefault().LineId != station.Where(item => item.StationId == int.Parse(FirstRoute[i + 1].ToString())).FirstOrDefault().LineId)
                                     {
                                         var item0 = new RouteDTO();
-                                        var CurLine = station.Where(item => item.StationId == int.Parse(ViaRoute[i].ToString())).FirstOrDefault().LineName;
-                                        var NewLine = station.Where(item => item.StationId == int.Parse(ViaRoute[i + 1].ToString())).FirstOrDefault().LineName;
-                                        var NewStation = station.Where(item => item.StationId == int.Parse(ViaRoute[i + 1].ToString())).FirstOrDefault().StationName;
+                                        var CurLine = station.Where(item => item.StationId == int.Parse(FirstRoute[i].ToString())).FirstOrDefault().LineName;
+                                        var NewLine = station.Where(item => item.StationId == int.Parse(FirstRoute[i + 1].ToString())).FirstOrDefault().LineName;
+                                        var NewStation = station.Where(item => item.StationId == int.Parse(FirstRoute[i + 1].ToString())).FirstOrDefault().StationName;
                                         var continuelineMsg = String.Format("change line from {0} to {1} and continue journey toward {2}", CurLine, NewLine, NewStation);
                                         item0.StationId = 0;
                                         item0.StationName = continuelineMsg;
@@ -159,113 +104,158 @@ namespace MyJourneyPlanner_OOkoye.Controllers
                                     }
                                 }
 
-                               
 
+                                //   var connectingroutes = station.Where(a => FirstRoute.Any(b => a.StationId  == int.Parse(b.ToString())));
+
+                                result.Add(new ResponseMessage() { Status = "OK", Message = "Retrieved Successfully", Data = JsonConvert.SerializeObject(connectingroutes) });
+
+                            }
+                            else
+                            {
+                                var Viastation = db.Stations.Where(s => s.StationName == viastation).FirstOrDefault();
+                                if (Viastation != null)
+                                {
+                                    int v = Viastation.StationId;
+
+                                    List<int> ViaRoute = new List<int>();
+                                    var AllRoute = p.printAllPaths(s, d);
+                                    bool bfound = false;
+                                    for (int i = 0; i < AllRoute.Count; i++)
+                                    {
+                                        if (AllRoute[i].Contains(v))
+                                        {
+                                            ViaRoute = AllRoute[i];
+                                            bfound = true;
+                                        }
+                                    }
+                                    if (!bfound)
+                                    {
+                                        result.Add(new ResponseMessage() { Status = "NotExists", Message = "Via Station does not exist in Route" });
+                                        return result;
+                                    }
+
+
+                                    for (int i = 0; i < ViaRoute.Count; i++)
+                                    {
+                                        var item = new RouteDTO();
+                                        item.StationId = int.Parse(ViaRoute[i].ToString());
+                                        item.StationName = station.Where(item => item.StationId == int.Parse(ViaRoute[i].ToString())).FirstOrDefault().StationName;
+                                        item.LineId = station.Where(item => item.StationId == int.Parse(ViaRoute[i].ToString())).FirstOrDefault().LineId;
+                                        item.LineName = station.Where(item => item.StationId == int.Parse(ViaRoute[i].ToString())).FirstOrDefault().LineName;
+                                        item.LineColor = station.Where(item => item.StationId == int.Parse(ViaRoute[i].ToString())).FirstOrDefault().LineColor;
+
+                                        connectingroutes.Add(item);
+                                        if (i < ViaRoute.Count - 1 && station.Where(item => item.StationId == int.Parse(ViaRoute[i].ToString())).FirstOrDefault().LineId != station.Where(item => item.StationId == int.Parse(ViaRoute[i + 1].ToString())).FirstOrDefault().LineId)
+                                        {
+                                            var item0 = new RouteDTO();
+                                            var CurLine = station.Where(item => item.StationId == int.Parse(ViaRoute[i].ToString())).FirstOrDefault().LineName;
+                                            var NewLine = station.Where(item => item.StationId == int.Parse(ViaRoute[i + 1].ToString())).FirstOrDefault().LineName;
+                                            var NewStation = station.Where(item => item.StationId == int.Parse(ViaRoute[i + 1].ToString())).FirstOrDefault().StationName;
+                                            var continuelineMsg = String.Format("change line from {0} to {1} and continue journey toward {2}", CurLine, NewLine, NewStation);
+                                            item0.StationId = 0;
+                                            item0.StationName = continuelineMsg;
+                                            item0.LineId = 0;
+                                            item0.LineName = "";
+                                            connectingroutes.Add(item0);
+                                        }
+                                    }
+
+
+
+                                    result.Add(new ResponseMessage() { Status = "OK", Message = "Retrieved Successfully", Data = JsonConvert.SerializeObject(connectingroutes) });
+
+
+                                }
+                                else { result.Add(new ResponseMessage() { Status = "NotExists", Message = "Via Station does not exist" }); }
+                            }
+
+
+                        }
+                        else
+                        {
+                            var Excludingstation = db.Stations.Where(s => s.StationName == excludingstation).FirstOrDefault();
+                            if (Excludingstation != null)
+                            {
+                                int e = Excludingstation.StationId;
+
+                                List<int> ExclRoute = new List<int>();
+                                var AllRoute0 = p.printAllPaths(s, d);
+                                bool bfound0 = false;
+                                for (int i = 0; i < AllRoute0.Count; i++)
+                                {
+                                    if (AllRoute0[i].Contains(e))
+                                    {
+                                        //AllRoute0.Remove(AllRoute0[i]);
+                                        bfound0 = true;
+                                    }
+                                }
+                                //var itemNotExcl = AllRoute0.FirstOrDefault(r => int.Parse(r.ToString()) != e);
+                                for (int i = 0; i < AllRoute0.Count; i++)
+                                {
+                                    if (!AllRoute0[i].Contains(e))
+                                    {
+                                        ExclRoute = AllRoute0[i];
+
+                                    }
+                                }
+
+                                if (!bfound0)
+                                {
+                                    result.Add(new ResponseMessage() { Status = "NotExists", Message = "Excluding Station does not exist in Route" });
+                                    return result;
+                                }
+                                if (ExclRoute.Count == 0)
+                                {
+                                    result.Add(new ResponseMessage() { Status = "NotExists", Message = "No Available Routes Outside the Excluding Station" });
+                                    return result;
+                                }
+
+                                for (int i = 0; i < ExclRoute.Count; i++)
+                                {
+                                    var item = new RouteDTO();
+                                    item.StationId = int.Parse(ExclRoute[i].ToString());
+                                    item.StationName = station.Where(item => item.StationId == int.Parse(ExclRoute[i].ToString())).FirstOrDefault().StationName;
+                                    item.LineId = station.Where(item => item.StationId == int.Parse(ExclRoute[i].ToString())).FirstOrDefault().LineId;
+                                    item.LineName = station.Where(item => item.StationId == int.Parse(ExclRoute[i].ToString())).FirstOrDefault().LineName;
+                                    item.LineColor = station.Where(item => item.StationId == int.Parse(ExclRoute[i].ToString())).FirstOrDefault().LineColor;
+
+                                    connectingroutes.Add(item);
+                                    if (i < ExclRoute.Count - 1 && station.Where(item => item.StationId == int.Parse(ExclRoute[i].ToString())).FirstOrDefault().LineId != station.Where(item => item.StationId == int.Parse(ExclRoute[i + 1].ToString())).FirstOrDefault().LineId)
+                                    {
+                                        var item0 = new RouteDTO();
+                                        var CurLine = station.Where(item => item.StationId == int.Parse(ExclRoute[i].ToString())).FirstOrDefault().LineName;
+                                        var NewLine = station.Where(item => item.StationId == int.Parse(ExclRoute[i + 1].ToString())).FirstOrDefault().LineName;
+                                        var NewStation = station.Where(item => item.StationId == int.Parse(ExclRoute[i + 1].ToString())).FirstOrDefault().StationName;
+                                        var continuelineMsg = String.Format("change line from {0} to {1} and continue journey toward {2}", CurLine, NewLine, NewStation);
+                                        item0.StationId = 0;
+                                        item0.StationName = continuelineMsg;
+                                        item0.LineId = 0;
+                                        item0.LineName = "";
+                                        connectingroutes.Add(item0);
+                                    }
+                                }
                                 result.Add(new ResponseMessage() { Status = "OK", Message = "Retrieved Successfully", Data = JsonConvert.SerializeObject(connectingroutes) });
 
 
                             }
-                            else { result.Add(new ResponseMessage() { Status = "NotExists", Message = "Via Station does not exist" }); }
+                            else { result.Add(new ResponseMessage() { Status = "NotExists", Message = "Excluding Station does not exist" }); }
                         }
 
-                        
                     }
-                    else
-                    {
-                        var Excludingstation = db.Stations.Where(s => s.StationName == excludingstation).FirstOrDefault();
-                        if (Excludingstation != null)
-                        {
-                            int e = Excludingstation.StationId;
-
-                            List<int> ExclRoute = new List<int>();
-                            var AllRoute0 = p.printAllPaths(s, d);
-                            bool bfound0 = false;
-                            for (int i = 0; i < AllRoute0.Count; i++)
-                            {
-                                if (AllRoute0[i].Contains(e))
-                                {
-                                    //AllRoute0.Remove(AllRoute0[i]);
-                                    bfound0 = true;
-                                }
-                            }
-                            //var itemNotExcl = AllRoute0.FirstOrDefault(r => int.Parse(r.ToString()) != e);
-                            for (int i = 0; i < AllRoute0.Count; i++)
-                            {
-                                if (!AllRoute0[i].Contains(e))
-                                {
-                                    ExclRoute = AllRoute0[i];
-                                    
-                                }
-                            }
-
-                            if (!bfound0)
-                            {
-                                result.Add(new ResponseMessage() { Status = "NotExists", Message = "Excluding Station does not exist in Route" });
-                                return result;
-                            }
-                            if (ExclRoute.Count == 0)
-                            {
-                                result.Add(new ResponseMessage() { Status = "NotExists", Message = "No Available Routes Outside the Excluding Station" });
-                                return result;
-                            }
-
-                            for (int i = 0; i < ExclRoute.Count; i++)
-                            {
-                                var item = new RouteDTO();
-                                item.StationId = int.Parse(ExclRoute[i].ToString());
-                                item.StationName = station.Where(item => item.StationId == int.Parse(ExclRoute[i].ToString())).FirstOrDefault().StationName;
-                                item.LineId = station.Where(item => item.StationId == int.Parse(ExclRoute[i].ToString())).FirstOrDefault().LineId;
-                                item.LineName = station.Where(item => item.StationId == int.Parse(ExclRoute[i].ToString())).FirstOrDefault().LineName;
-                                item.LineColor = station.Where(item => item.StationId == int.Parse(ExclRoute[i].ToString())).FirstOrDefault().LineColor;
-
-                                connectingroutes.Add(item);
-                                if (i < ExclRoute.Count - 1 && station.Where(item => item.StationId == int.Parse(ExclRoute[i].ToString())).FirstOrDefault().LineId != station.Where(item => item.StationId == int.Parse(ExclRoute[i + 1].ToString())).FirstOrDefault().LineId)
-                                {
-                                    var item0 = new RouteDTO();
-                                    var CurLine = station.Where(item => item.StationId == int.Parse(ExclRoute[i].ToString())).FirstOrDefault().LineName;
-                                    var NewLine = station.Where(item => item.StationId == int.Parse(ExclRoute[i + 1].ToString())).FirstOrDefault().LineName;
-                                    var NewStation = station.Where(item => item.StationId == int.Parse(ExclRoute[i + 1].ToString())).FirstOrDefault().StationName;
-                                    var continuelineMsg = String.Format("change line from {0} to {1} and continue journey toward {2}", CurLine, NewLine, NewStation);
-                                    item0.StationId = 0;
-                                    item0.StationName = continuelineMsg;
-                                    item0.LineId = 0;
-                                    item0.LineName = "";
-                                    connectingroutes.Add(item0);
-                                }
-                            }
-                            result.Add(new ResponseMessage() { Status = "OK", Message = "Retrieved Successfully", Data = JsonConvert.SerializeObject(connectingroutes) });
-
-
-                        }
-                        else { result.Add(new ResponseMessage() { Status = "NotExists", Message = "Excluding Station does not exist" }); }
-                    }
-
+                    else { result.Add(new ResponseMessage() { Status = "NotExists", Message = "Destination Station does not exist" }); }
                 }
                 else { result.Add(new ResponseMessage() { Status = "NotExists", Message = "Start Station does not exist" }); }
             }
-            else { result.Add(new ResponseMessage() { Status = "NotExists", Message = "Destination Station does not exist" }); }
-
-            //List<Train> trains = new List<Train>();
-            //string source = "abc";
-            //string destination = "xyz";
-
-
-            //var results = route.Where(x => x.Routes.Any(y => y.StationId == source) && x.Routes.Any(y => y.StationId == destination))
-            //    .Select(x => new {
-            //        source = x.Routes.Where(y => y.StationId == source).FirstOrDefault(),
-            //        destination = x.Routes.Where(y => y.StationId == destination).FirstOrDefault()
-            //    })
-            //    .Where(x => x.destination.StopNumber > x.source.StopNumber)
-            //    .ToList();
+            else { result.Add(new ResponseMessage() { Status = "NotExists", Message = "Start Station and Destination Stations cannot be empty" }); }
 
 
             return result;
         }
 
 
-// A directed graph using
-// adjacency list representation
-public class Path
+        // Depth First Traversal of a given directed graph Algorithm
+        // for getting all possible routes between start and destination stations
+        public class Path
     {
             //  List of stationIds in path
          List<List<int>> retList  = new List<List<int>>();

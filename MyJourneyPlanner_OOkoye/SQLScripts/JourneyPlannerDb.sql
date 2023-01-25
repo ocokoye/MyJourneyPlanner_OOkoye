@@ -22,7 +22,7 @@ StationName NVARCHAR(50) NOT NULL
 );
 
 INSERT INTO Station (StationName) VALUES ('Chancery Lane'); 
-INSERT INTO Station (StationName) VALUES ('St Paul s');
+INSERT INTO Station (StationName) VALUES ('St Paul''s');
 INSERT INTO Station (StationName) VALUES('Bank');
 INSERT INTO Station (StationName) VALUES ('Monument');
 INSERT INTO Station (StationName) VALUES ('Cannon Street');
