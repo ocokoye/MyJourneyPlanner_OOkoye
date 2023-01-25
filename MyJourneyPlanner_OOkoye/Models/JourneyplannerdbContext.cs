@@ -25,8 +25,11 @@ public partial class JourneyplannerdbContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Server=DESKTOP-JV4K3QV; Database=journeyplannerdb; Encrypt=False;TrustServerCertificate=False; user id=sa; pwd=Pa$$w0rd");
+        => optionsBuilder.UseSqlServer("Server=journeyplannerdbsvr.database.windows.net; Database=journeyplannerdb; Encrypt=False;TrustServerCertificate=False; user id=CloudSA4d443c2c; pwd=Pa$$w0rd");
 
+//protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+//#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
+//        => optionsBuilder.UseSqlServer("Server=DESKTOP-JV4K3QV; Database=journeyplannerdb; Encrypt=False;TrustServerCertificate=False; user id=sa; pwd=Pa$$w0rd");
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Line>(entity =>
