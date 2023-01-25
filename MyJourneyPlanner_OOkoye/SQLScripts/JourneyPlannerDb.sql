@@ -7,14 +7,14 @@ LineName NVARCHAR(50) NOT NULL,
 LineColor NVARCHAR(50)
 );
 
-INSERT INTO Line (LineName, LineColor) VALUES ('Central Line', 1, 'Red'); 
-INSERT INTO Line (LineName, LineColor) VALUES ('Circle Line', 2,'Yellow');
-INSERT INTO Line (LineName, LineColor) VALUES('District Line',3, 'Green');
-INSERT INTO Line (LineName,LineColor) VALUES ('Bakerloo Line',4, 'Brown');
-INSERT INTO Line (LineName,LineColor) VALUES ('Northern Line',5, 'Black');
-INSERT INTO Line (LineName, LineColor) VALUES ('Piccadilly Line',6, 'Red');
-INSERT INTO Line (LineName, LineColor) VALUES ('Waterloo and City Line',7, '');
-INSERT INTO Line (LineName, LineColor) VALUES ('Dockland Light Railway Line',8, '');
+INSERT INTO Line (LineName, LineColor) VALUES ('Central Line',  'Red'); 
+INSERT INTO Line (LineName, LineColor) VALUES ('Circle Line', 'Yellow');
+INSERT INTO Line (LineName, LineColor) VALUES('District Line', 'Green');
+INSERT INTO Line (LineName,LineColor) VALUES ('Bakerloo Line', 'Brown');
+INSERT INTO Line (LineName,LineColor) VALUES ('Northern Line', 'Black');
+INSERT INTO Line (LineName, LineColor) VALUES ('Piccadilly Line', 'Red');
+INSERT INTO Line (LineName, LineColor) VALUES ('Waterloo and City Line', '');
+INSERT INTO Line (LineName, LineColor) VALUES ('Dockland Light Railway Line', '');
 
 CREATE TABLE Station (
 StationId int NOT NULL PRIMARY KEY  IDENTITY(1,1),
